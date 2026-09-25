@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Bogotá a tu ritmo</title>
+
+  <style>
+    /* ── Paleta bogotana ─────────────────────────────────────────── */
+    :root {
+      --terra:   #b5451b;   /* terracota/ladrillo – acento primario  */
+      --terra2:  #d4622e;   /* terracota claro                       */
+      --bosque:  #2d6a4f;   /* verde cerros – acento seguridad       */
+      --bosque2: #52b788;   /* verde claro                           */
+      --dorado:  #e9a820;   /* dorado – valoraciones / gastro        */
+      --crema:   #fdf6ee;   /* fondo app                             */
+      --crema2:  #f4ebe0;   /* fondo tarjetas                        */
+      --barro:   #8b5e3c;   /* texto secundario marrón               */
+      --gris:    #6b7280;   /* texto desactivado                     */
+      --linea:   #e3d5c5;   /* bordes                                */
+      --blanco:  #ffffff;
+      --sombra:  0 8px 32px #b5451b18;
+    }
+
+    /* ── Reset y base ────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #e8ddd0;
+      color: #1f1208;
+      font-family: 'Segoe UI', Inter, system-ui, -apple-system, sans-serif;
+    }
+    button, input, select { font: inherit; cursor: pointer; }
+    input { cursor: text; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Contenedor app móvil ────────────────────────────────────── */
+    #app {
+      max-width: 480px;
+      min-height: 100vh;
+      margin: auto;
+      background: var(--crema);
+      box-shadow: 0 0 60px #5523006b;
+      position: relative;
+    }
+
+    /* ── Pantallas ───────────────────────────────────────────────── */
+    .screen { min-height: 100vh; padding: 18px 16px 96px; }
+
+    /* ── Encabezado ─────────────────────────────────────────────── */
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    .identity { display: flex; align-items: center; gap: 10px; }
+    .logo {
+      display: grid; place-items: center;
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      background: var(--terra);
+      color: var(--blanco);
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .top h1 { font-size: 20px; margin: 0; font-weight: 800; }
+    .sub { font-size: 12px; color: var(--barro); margin: 2px 0 0; }
+    .icon { border: 0; background: none; color: #1f1208; font-size: 22px; width: 38px; height: 38px; border-radius: 9px; }
+    .icon:hover { background: var(--crema2); }
+
+    /* ── Hero ───────────────────────────────────────────────────── */
+    .hero {
+      padding: 20px 18px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #b5451b, #d4622e 60%, #e9a820);
+      color: var(--blanco);
+    }
+    .hero h2 { font-size: 22px; margin: 0 0 7px; }
+    .hero p  { font-size: 13px; line-height: 1.45; margin: 0; color: #ffffffd8; }
+
+    /* ── Buscador ───────────────────────────────────────────────── */
+    .search {
+      display: flex; align-items: center; gap: 8px;
+      height: 46px; padding: 0 13px; margin: 14px 0;
+      background: var(--blanco);
+      border: 1.5px solid var(--linea);
+      border-radius: 14px;
+    }
+    .search input { flex: 1; border: 0; outline: 0; background: transparent; font-size: 14px; }
+    .search span  { color: var(--barro); font-size: 16px; }
+
+    /* ── Encabezado de sección ──────────────────────────────────── */
+    .heading {
+      display: flex; justify-content: space-between; align-items: center;
+      margin: 20px 0 10px;
+    }
+    .heading h2 { font-size: 17px; margin: 0; }
+    .link { border: 0; background: none; color: var(--terra); font-size: 12px; font-weight: 600; }
+
+    /* ── Grid de categorías ─────────────────────────────────────── */
+    .grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 9px; }
+    .cat {
+      height: 82px; display: grid; place-items: center; gap: 3px;
+      border: 1.5px solid var(--linea); border-radius: 16px;
+      background: var(--blanco); color: #1f1208; font-size: 12px; font-weight: 600;
+      transition: border-color .15s, background .15s;
+    }
+    .cat:hover { border-color: var(--terra2); background: var(--crema2); }
+    .cat b { font-size: 24px; }
+
+    /* ── Chips de filtro ────────────────────────────────────────── */
+    .row { display: flex; gap: 7px; overflow-x: auto; padding: 2px 0 6px; scrollbar-width: none; }
+    .row::-webkit-scrollbar { display: none; }
+    .chip {
+      white-space: nowrap; border: 1.5px solid var(--linea);
+      border-radius: 99px; background: var(--blanco);
+      color: var(--barro); padding: 7px 13px; font-size: 12px; font-weight: 600;
+      transition: background .15s, border-color .15s, color .15s;
+    }
+    .chip.active, .chip:hover { background: var(--terra); border-color: var(--terra); color: var(--blanco); }
+
+    /* ── Lista y tarjetas ───────────────────────────────────────── */
+    .list { display: grid; gap: 10px; }
+    .card {
+      display: grid; grid-template-columns: 72px 1fr auto;
+      gap: 11px; align-items: center;
+      border: 1.5px solid var(--linea); border-radius: 16px;
+      background: var(--blanco); color: #1f1208;
+      text-align: left; padding: 0; overflow: hidden;
+      transition: box-shadow .15s, border-color .15s;
+    }
+    .card:hover { box-shadow: var(--sombra); border-color: var(--terra2); }
+    .art {
+      height: 72px; display: grid; place-items: center;
+      font-size: 30px;
+      background: linear-gradient(135deg, var(--crema2), var(--linea));
+    }
+    .copy h3 { font-size: 14px; margin: 0 0 2px; font-weight: 700; }
+    .copy p  { font-size: 12px; color: var(--barro); margin: 2px 0; }
+    .rate    { color: var(--dorado) !important; font-weight: 700; }
+    .chev   { font-size: 20px; color: var(--gris); padding-right: 10px; }
+
+    /* ── Badge de seguridad ─────────────────────────────────────── */
+    .badge-seg-alta     { display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--bosque);background:#d8f3e8;border:1px solid #a8dfc0;padding:3px 8px;border-radius:99px;font-weight:700; }
+    .badge-seg-precau   { display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#92580d;background:#fff3cd;border:1px solid #f5d78a;padding:3px 8px;border-radius:99px;font-weight:700; }
+    .badge-seg-acomp    { display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#7c3030;background:#fde8e8;border:1px solid #f5b7b7;padding:3px 8px;border-radius:99px;font-weight:700; }
+
+    /* ── Badge de precio ────────────────────────────────────────── */
+    .badge-precio {
+      display:inline-flex;align-items:center;font-size:11px;
+      color:var(--terra);background:var(--crema2);
+      border:1px solid var(--linea);
+      padding:3px 8px;border-radius:99px;font-weight:800;
+    }
+    .badge-gratis { color:var(--bosque);background:#d8f3e8;border-color:#a8dfc0; }
+
+    /* ── Badge de valoración ────────────────────────────────────── */
+    .badge {
+      font-size:12px;color:#765510;
+      background:#fff4d8;border:1px solid #f2db9e;
+      padding:5px 10px;border-radius:99px;font-weight:700;
+    }
+
+    /* ── Navegación inferior ────────────────────────────────────── */
+    .nav {
+      position: fixed; z-index: 10; max-width: 480px;
+      left: 50%; bottom: 0; transform: translateX(-50%);
+      width: 100%; display: grid; grid-template-columns: repeat(5,1fr);
+      padding: 6px 4px 8px;
+      background: #fffffff8;
+      border-top: 1.5px solid var(--linea);
+      backdrop-filter: blur(10px);
+    }
+    .nav button {
+      display: grid; place-items: center; gap: 2px;
+      border: 0; background: none; color: var(--gris); font-size: 10px; font-weight: 600;
+    }
+    .nav b    { font-size: 20px; }
+    .nav .on  { color: var(--terra); }
+
+    /* ── Banner de pantalla ─────────────────────────────────────── */
+    .banner {
+      height: 175px; display: grid; place-items: center;
+      overflow: hidden; position: relative;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--crema2), #e6c9a8);
+      font-size: 70px;
+    }
+    .banner::after {
+      content: ""; position: absolute; bottom: 0; width: 100%; height: 58px;
+      background: #ffffff44;
+      clip-path: polygon(0 100%, 30% 20%, 55% 70%, 75% 15%, 100% 100%);
+    }
+
+    /* ── Meta / descripción de lugar ────────────────────────────── */
+    .meta { display: grid; gap: 11px; margin: 16px 0; }
+    .meta div { display: flex; align-items: center; gap: 11px; font-size: 14px; color: #2e1f0e; }
+    .meta b {
+      display: grid; place-items: center;
+      width: 30px; height: 30px; border-radius: 9px;
+      background: var(--crema2); font-weight: 400; font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    /* ── Tip / consejo ──────────────────────────────────────────── */
+    .tip {
+      padding: 11px 13px;
+      color: #4a3b2a;
+      background: var(--crema2);
+      border-left: 3px solid var(--terra);
+      border-radius: 4px 12px 12px 4px;
+      font-size: 12px; line-height: 1.5;
+    }
+
+    /* ── Botones de acción ──────────────────────────────────────── */
+    .actions { display: grid; gap: 9px; margin-top: 18px; }
+    .primary {
+      width: 100%; padding: 13px; border-radius: 13px; border: 0;
+      background: var(--terra); color: var(--blanco); font-weight: 700; font-size: 14px;
+      transition: background .15s;
+    }
+    .primary:hover { background: var(--terra2); }
+    .secondary {
+      width: 100%; padding: 12px; border-radius: 13px;
+      background: var(--crema2); border: 1.5px solid var(--linea);
+      color: var(--terra); font-weight: 700; font-size: 14px;
+      transition: background .15s;
+    }
+    .secondary:hover { background: var(--linea); }
+
+    /* ── Panel / tarjeta blanca ─────────────────────────────────── */
+    .panel { padding: 16px; border: 1.5px solid var(--linea); border-radius: 18px; background: var(--blanco); }
+    .panel h2 { font-size: 18px; margin: 0 0 4px; }
+    .panel label { display: block; margin: 14px 0 6px; font-size: 13px; font-weight: 700; }
+    .panel select {
+      width: 100%; padding: 10px 12px;
+      border: 1.5px solid var(--linea); border-radius: 11px;
+      background: var(--crema); font-size: 14px;
+    }
+
+    /* ── Intereses ──────────────────────────────────────────────── */
+    .interest { display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; }
+    .interest::-webkit-scrollbar { display: none; }
+    .interest button {
+      white-space: nowrap; border: 1.5px solid var(--linea);
+      border-radius: 99px; background: var(--blanco);
+      color: var(--barro); padding: 8px 14px; font-size: 13px; font-weight: 600;
+    }
+    .interest .selected { background: var(--terra); border-color: var(--terra); color: var(--blanco); }
+
+    /* ── Summary / mini card ────────────────────────────────────── */
+    .summary { display: flex; align-items: center; gap: 13px; padding: 13px; }
+    .mini {
+      width: 58px; height: 54px; flex-shrink: 0;
+      display: grid; place-items: center;
+      border-radius: 13px; background: var(--crema2); font-size: 27px;
+    }
+    .summary h3 { font-size: 14px; margin: 0 0 3px; font-weight: 700; }
+    .summary p  { font-size: 12px; color: var(--barro); margin: 2px 0; }
+
+    /* ── Timeline del plan ──────────────────────────────────────── */
+    .timeline { position: relative; margin: 14px 0; }
+    .timeline::before {
+      content: ""; position: absolute; left: 14px; top: 18px;
+      width: 2px; height: calc(100% - 34px);
+      background: var(--linea);
+    }
+    .step {
+      display: grid; grid-template-columns: 30px 60px 1fr auto;
+      align-items: center; gap: 8px; min-height: 80px;
+    }
+    .dot {
+      z-index: 1; margin-left: 8px;
+      width: 12px; height: 12px;
+      border: 3px solid var(--blanco); border-radius: 50%;
+      background: var(--terra); box-shadow: 0 0 0 2px var(--terra2);
+    }
+    .time { font-size: 10px; color: var(--barro); font-weight: 600; line-height: 1.3; }
+    .step .card { grid-template-columns: 1fr; padding: 10px 12px; }
+    .remove-btn {
+      border: 0; background: none; color: var(--gris);
+      font-size: 18px; width: 32px; height: 32px; border-radius: 8px;
+    }
+    .remove-btn:hover { background: #fde8e8; color: #c0392b; }
+
+    /* ── Mapa Google Maps (RESTAURADO) ──────────────────────────── */
+    .map-container {
+      height: 340px; position: relative; overflow: hidden;
+      margin: 14px 0; border-radius: 18px;
+      border: 1.5px solid var(--linea);
+    }
+    .map-container iframe {
+      width: 100%; height: 100%; border: 0;
+      border-radius: 18px;
+    }
+
+    /* ── Chat ───────────────────────────────────────────────────── */
+    .chat { display: flex; flex-direction: column; min-height: calc(100vh - 106px); }
+    .messages { flex: 1; display: grid; align-content: start; gap: 10px; padding: 12px 0; }
+    .msg {
+      max-width: 90%; padding: 10px 13px;
+      border-radius: 16px; font-size: 13px; line-height: 1.5;
+    }
+    .bot  { background: var(--blanco); border: 1.5px solid var(--linea); border-top-left-radius: 4px; }
+    .user { justify-self: end; background: var(--terra); color: var(--blanco); border-top-right-radius: 4px; }
+    .suggest { display: flex; gap: 7px; overflow-x: auto; margin-bottom: 10px; scrollbar-width: none; }
+    .suggest::-webkit-scrollbar { display: none; }
+    .suggest button {
+      white-space: nowrap; border: 1.5px solid var(--linea);
+      border-radius: 99px; background: var(--blanco);
+      color: var(--terra); padding: 7px 11px; font-size: 11px; font-weight: 600;
+    }
+    .suggest button:hover { background: var(--crema2); }
+    .chatbar {
+      display: flex; gap: 8px; padding: 8px;
+      border: 1.5px solid var(--linea); border-radius: 16px; background: var(--blanco);
+    }
+    .chatbar input { flex: 1; border: 0; outline: 0; font-size: 14px; }
+    .chatbar button {
+      width: 38px; border: 0; border-radius: 10px;
+      background: var(--terra); color: var(--blanco); font-size: 16px;
+    }
+    .chatbar button:hover { background: var(--terra2); }
+    .recommend {
+      margin-top: 8px; padding: 10px 12px;
+      border: 1.5px solid var(--linea); border-radius: 13px;
+      background: var(--crema2); font-size: 12px; line-height: 1.5;
+    }
+    .recommend strong { font-size: 13px; color: #1f1208; }
+    .recommend-actions { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .recommend-actions button {
+      padding: 5px 10px; border-radius: 8px; border: 0;
+      font-size: 11px; font-weight: 700; cursor: pointer;
+    }
+    .rec-btn-plan { background: var(--terra); color: var(--blanco); }
+    .rec-btn-plan:hover { background: var(--terra2); }
+    .rec-btn-map  { background: var(--crema2); border: 1.5px solid var(--linea); color: var(--barro); }
+
+    /* ── Perfil ─────────────────────────────────────────────────── */
+    .profile  { text-align: center; padding: 22px 14px; }
+    .avatar   { display: grid; place-items: center; width: 68px; height: 68px; margin: auto; border-radius: 50%; background: var(--crema2); font-size: 32px; }
+    .profile h2 { font-size: 19px; margin: 10px 0 3px; }
+    .stats    { display: grid; grid-template-columns: repeat(3,1fr); margin-top: 18px; padding-top: 14px; border-top: 1.5px solid var(--linea); }
+    .stats span { display: block; margin-top: 2px; color: var(--gris); font-size: 11px; }
+
+    /* ── Toast ──────────────────────────────────────────────────── */
+    .toast {
+      position: fixed; z-index: 20; bottom: 86px;
+      left: 50%; transform: translate(-50%, 12px);
+      opacity: 0; padding: 10px 16px; border-radius: 12px;
+      background: #1f1208; color: var(--blanco);
+      font-size: 13px; font-weight: 600;
+      transition: opacity .2s, transform .2s;
+      white-space: nowrap; pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    /* ── Vacío / sin resultados ─────────────────────────────────── */
+    .empty {
+      padding: 24px; text-align: center; color: var(--barro);
+      font-size: 14px; background: var(--crema2);
+      border-radius: 14px; border: 1.5px dashed var(--linea);
+    }
+  </style>
+</head>
+<body>
+  <main id="app"></main>
+  <div id="toast" class="toast"></div>
+  <script src="./functional_2.js"></script>
+</body>
+</html>
